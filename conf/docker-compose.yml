@@ -1,0 +1,26 @@
+version: '2'
+
+services:
+  phpfpm:
+    image: 'bitnami/php-fpm:8.1'
+    container_name: bitnami-phpfpm
+    networks:
+      - app-tier
+    volumes:
+      - ../php:/app
+  nginx:
+    image: 'bitnami/nginx:latest'
+    container_name: bitnami-nginx
+    depends_on:
+      - phpfpm
+    networks:
+      - app-tier
+    ports:
+      - '80:80'
+      - '443:443'
+    volumes:
+      - ./nginx.conf:/opt/bitnami/nginx/conf/server_blocks/myapp.com.conf
+      - ./nginx_ssl.conf:/opt/bitnami/nginx/conf/server_blocks/myapp.com_ssl.conf
+networks:
+  app-tier:
+    driver: bridge
